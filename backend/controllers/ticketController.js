@@ -38,7 +38,7 @@ const getTicket = asyncHandler(async (req, res) => {
     res.status(404);
     throw new Error('Ticket not found');
   }
- 
+
   // Check if user is owner of the ticket
   if (ticket.user.toString() !== req.user.id) {
     res.status(401);
@@ -77,4 +77,74 @@ const createTicket = asyncHandler(async (req, res) => {
   res.status(201).json(ticket);
 });
 
-module.exports = { getTickets, getTicket, createTicket };
+// Delete a ticket
+// DELETE /api/tickets/:id
+// Protected route
+const deleteTicket = asyncHandler(async (req, res) => {
+  // Get user using the ID in JWT(being set in auth middleware)
+  const user = await User.findById(req.user.id);
+
+  if (!user) {
+    res.status(401);
+    throw new Error('User not found');
+  }
+
+  const ticket = await Ticket.findById(req.params.id);
+
+  if (!ticket) {
+    res.status(404);
+    throw new Error('Ticket not found');
+  }
+
+  // Check if user is owner of the ticket
+  if (ticket.user.toString() !== req.user.id) {
+    res.status(401);
+    throw new Error('Not Authorized');
+  }
+
+  await ticket.remove();
+
+  res.status(200).json({ success: true });
+});
+
+// Update a ticket
+// PUT /api/tickets/:id
+// Protected route
+const updateTicket = asyncHandler(async (req, res) => {
+  // Get user using the ID in JWT(being set in auth middleware)
+  const user = await User.findById(req.user.id);
+
+  if (!user) {
+    res.status(401);
+    throw new Error('User not found');
+  }
+
+  const ticket = await Ticket.findById(req.params.id);
+
+  if (!ticket) {
+    res.status(404);
+    throw new Error('Ticket not found');
+  }
+
+  // Check if user is owner of the ticket
+  if (ticket.user.toString() !== req.user.id) {
+    res.status(401);
+    throw new Error('Not Authorized');
+  }
+
+  const updatedTicket = await Ticket.findByIdAndUpdate(
+    req.params.id,
+    req.body,
+    { new: true }
+  );
+
+  res.status(200).json(updatedTicket);
+});
+
+module.exports = {
+  getTickets,
+  getTicket,
+  createTicket,
+  deleteTicket,
+  updateTicket,
+};
