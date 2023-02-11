@@ -20,6 +20,34 @@ const getTickets = asyncHandler(async (req, res) => {
   res.status(200).json(tickets);
 });
 
+// Get single user ticket
+// GET /api/tickets/:id
+// Protected route
+const getTicket = asyncHandler(async (req, res) => {
+  // Get user using the ID in JWT(being set in auth middleware)
+  const user = await User.findById(req.user.id);
+
+  if (!user) {
+    res.status(401);
+    throw new Error('User not found');
+  }
+
+  const ticket = await Ticket.findById(req.params.id);
+
+  if (!ticket) {
+    res.status(404);
+    throw new Error('Ticket not found');
+  }
+ 
+  // Check if user is owner of the ticket
+  if (ticket.user.toString() !== req.user.id) {
+    res.status(401);
+    throw new Error('Not Authorized');
+  }
+
+  res.status(200).json(ticket);
+});
+
 // create new ticket
 // POST /api/tickets/
 // Protected route
@@ -49,4 +77,4 @@ const createTicket = asyncHandler(async (req, res) => {
   res.status(201).json(ticket);
 });
 
-module.exports = { getTickets, createTicket };
+module.exports = { getTickets, getTicket, createTicket };
