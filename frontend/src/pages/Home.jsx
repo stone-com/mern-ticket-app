@@ -7,7 +7,8 @@ const Home = () => {
   return (
     <>
       <section className='heading'>
-        <h1>Hello {user.name.split(' ')[0]}, what do you need help with?</h1>
+        {user && <h1>Hello {user.name.split(' ')[0]}</h1>}
+        <h1>What do you need help with?</h1>
         <p>Please choose from an option below</p>
       </section>
 
