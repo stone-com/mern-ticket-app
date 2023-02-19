@@ -53,6 +53,14 @@ const Ticket = () => {
   const openModal = () => setModalIsOpen(true);
   const closeModal = () => setModalIsOpen(false);
 
+  // Submit the note
+  const onNoteSubmit = (e) => {
+    e.preventDefault();
+    console.log('Submit!');
+    setNoteText('');
+    closeModal();
+  };
+
   useEffect(() => {
     if (isError) {
       toast.error(message);
@@ -108,7 +116,23 @@ const Ticket = () => {
         <button className='btn-close' onClick={closeModal}>
           X
         </button>
-        
+        <form onSubmit={onNoteSubmit}>
+          <div className='form-group'>
+            <textarea
+              name='noteText'
+              id='noteText'
+              className='form-control'
+              placeholder='Note text'
+              value={noteText}
+              onChange={(e) => setNoteText(e.target.value)}
+            ></textarea>
+          </div>
+          <div className='form-group'>
+            <button className='btn' type='submit'>
+              Submit
+            </button>
+          </div>
+        </form>
       </Modal>
 
       {notes.map((note) => (
